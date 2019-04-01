@@ -1,0 +1,40 @@
+version: "3.7"
+
+volumes:
+  php-fpm:
+
+services:
+  nginx:
+    build: ./nginx
+    image: nginx
+    depends_on:
+      - php-fpm
+    labels:
+      com.example.description: "NGINX"
+      com.example.department: "DevOps Team"
+    hostname: nginx
+    container_name: nginx
+    privileged: false
+    ports:
+      - "443:443/tcp"
+      - "80:80/tcp"
+    restart: always
+    volumes:
+      - ./code:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  php-fpm:
+    build: ./php-fpm
+    image: php-fpm
+    labels:
+      com.example.description: "PHP-FPM"
+      com.example.department: "DevOps Team"
+    restart: always
+    hostname: php-fpm
+    container_name: php-fpm
+    privileged: false
+    volumes:
+      - ./code:/var/www/html
